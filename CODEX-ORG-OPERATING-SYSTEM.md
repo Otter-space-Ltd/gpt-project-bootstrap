@@ -247,7 +247,7 @@ Preserve the exact capitalization **<ORG_DISPLAY_NAME>**.
 - Use synthetic data for development, tests, fixtures, demonstrations, screenshots, and examples.
 - Never expose secrets, customer data, production data, or sensitive configuration through health, readiness, status, or diagnostic endpoints.
 - Add or update automated tests for every new or changed endpoint, integration, or other material behavior when reasonably testable. If automation is impractical, document why and perform appropriate manual verification.
-- Follow the established formatter. If no project convention exists, define the organization's indentation policy here.
+- Use tabs for indentation in source files unless an established project formatter requires otherwise.
 - Do not claim a local, board, deployment, or external-system change succeeded without direct confirmation.
 
 ## Opt-in commands
