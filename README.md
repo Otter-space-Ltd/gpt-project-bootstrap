@@ -16,7 +16,13 @@ If you prefer, copy the contents of [START-CODEX-ORG.md](START-CODEX-ORG.md) int
 - `AGENTS.md` — safety and routing instructions for an agent operating in this public repository.
 - `START-CODEX-ORG.md` — the short prompt that begins an interactive setup.
 - `CODEX-ORG-OPERATING-SYSTEM.md` — the detailed reusable blueprint and templates.
+- `AUTHORS.md` — author and contributor credits.
+- `LICENSE` — the Microsoft Public License (MS-PL).
 
 ## Safety boundary
 
 This repository is a public template, not your organization's live policy. It grants no access or authority. Organization-specific names, people, identifiers, private links, credentials, and generated policies belong in your own canonical repository and must not be committed here.
+
+## Authors and licence
+
+Authors are listed in [AUTHORS.md](AUTHORS.md). This project is licensed under the [Microsoft Public License (MS-PL)](LICENSE).
