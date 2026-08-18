@@ -265,6 +265,8 @@ This is strictly read-only.
 
 Persist only durable information established in the current conversation.
 
+- Audit the entire current conversation from its beginning, not only the most recent exchange. Treat an earlier successful SAVE as a checkpoint, but reconcile the full available conversation against live durable records so omissions are caught. Persist only missing or changed information and do not duplicate existing records.
+- If conversation compaction or missing context prevents a reliable full audit, use every available conversation summary and live record, then disclose the limitation instead of claiming completion.
 - Route business and operational decisions to <OPERATIONS_SYSTEM>, if applicable.
 - Route project-specific development requirements, technical discussion, progress, testing details, and code-level blockers to the relevant GitHub issue or project item.
 - Put durable technical documentation in the relevant repository when appropriate.
@@ -446,7 +448,8 @@ The two opt-in commands are deliberately asymmetric:
 
 ### SAVE
 
-- writes only durable information established in the conversation;
+- audits the entire current conversation from its beginning, even when SAVE was invoked earlier, and reconciles it against live durable records;
+- writes only durable information that is missing or has changed;
 - routes each item to its authoritative system;
 - reuses existing tasks/issues where appropriate;
 - does not dump transcripts or duplicate technical detail;
