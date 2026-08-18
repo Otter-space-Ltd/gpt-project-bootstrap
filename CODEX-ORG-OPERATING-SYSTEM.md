@@ -1,6 +1,6 @@
 # Reusable Codex + GitHub organization operating system
 
-This file is the detailed half of a two-file bootstrap kit for running multiple related repositories through Codex, one GitHub organization, and one organization-scoped GitHub connector:
+This file is the detailed half of a two-file bootstrap kit for running multiple related repositories through Codex and one GitHub organization:
 
 - `START-CODEX-ORG.md` is the short block a user copies into a new GPT conversation.
 - `CODEX-ORG-OPERATING-SYSTEM.md` is this detailed public blueprint. GPT reads it from the public bootstrap source, interviews the user about its placeholders, and generates organization-specific policy in the user's chosen canonical repository.
@@ -14,7 +14,7 @@ The design has four goals:
 1. one authoritative home for organization-wide Codex rules;
 2. small project-specific instruction files in every other repository;
 3. one clear source of truth for each kind of information; and
-4. one controlled, auditable route for all GitHub access.
+4. one explicit, auditable GitHub access policy for Codex that preserves an approved existing route or uses the connector-only baseline when none exists.
 
 Official background: Codex reads `AGENTS.md` files before work and layers files found from the project root toward the current working directory. A canonical file in a separate sibling repository is **not** inherited automatically; every project repository must explicitly direct Codex to read it. See [OpenAI's AGENTS.md documentation](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
 
@@ -31,6 +31,7 @@ Angle-bracketed values are deliberate prompts for GPT, not fields the user must 
 | `<CANONICAL_REPO>` | Repository containing the canonical `AGENTS.md` | `example-general` |
 | `<DEFAULT_BRANCH>` | Default branch used by the repositories | `main` |
 | `<LOCAL_PARENT>` | Local directory containing sibling checkouts | `C:\Repos\Example Studio` |
+| `<GITHUB_ACCESS_POLICY>` | Verified policy governing GitHub access by Codex or GPT | Preserve the approved existing policy, otherwise use the connector-only baseline |
 | `<TECHNICAL_OPERATOR>` | Person responsible for repository work | `Alex` |
 | `<OPERATIONS_ONLY_PEOPLE>` | People who use the operational tracker but not GitHub or code | `Sam` |
 | `<OPERATIONS_SYSTEM>` | Optional business/operations tracker | `Asana`, `Linear`, or `None` |
@@ -142,27 +143,44 @@ If everyone in the new organization is technical, simplify this section, but sti
 
 ---
 
-## 5. GitHub connector boundary
+## 5. GitHub access compatibility boundary
+
+Define one explicit GitHub access policy for Codex or GPT in the canonical `AGENTS.md`. This policy governs agent activity. It must not silently change how human developers, CI, deployed services, or other automation access GitHub unless the user explicitly includes those workflows in scope.
+
+### Existing environments
+
+Before proposing any GitHub access setup:
+
+1. Audit whether the organization already has an established route for Codex or GPT work, where it is documented, what scope it has, and whether it is available in the current environment.
+2. Treat installed tools and credentials as capability, not authorization. Obtain confirmation that the established route should be retained.
+3. When the user confirms retention, preserve the route and its safeguards exactly. Do not recommend, configure, or advertise alternatives.
+4. Do not disable, migrate, or rewrite existing human, CI, service, or automation access merely to standardize Codex.
+5. If the approved route is unavailable to the current agent, stop and ask the user for a decision. Do not improvise another route.
+
+Fill `<GITHUB_ACCESS_POLICY>` with the verified retained policy. State precisely which actor it governs, which repositories or organization it covers, how reads and writes are verified, and which parts are non-overridable. Do not copy unrelated access methods into the generated policy as examples.
+
+### Default for an unconfigured environment
+
+When no established, approved Codex or GPT route exists, use the connector-only policy as the baseline. This is a default for an unconfigured environment, not a mandate to migrate an existing one.
 
 Install one GitHub connector with access to `<GITHUB_ORG>` and no unrelated personal or organizational repositories. Grant the permissions genuinely required by the workflow. If full repository and organization permissions are intentionally granted, constrain the installation to this organization and audit it periodically.
 
-Put this rule in the canonical `AGENTS.md` and mark it non-overridable:
+Use this value for `<GITHUB_ACCESS_POLICY>` and mark it non-overridable:
 
-> **Non-overridable GitHub access rule:** Every GitHub read or write must use the installed GitHub connector. Never interact with GitHub through `git` network operations, `gh`, direct REST or GraphQL requests, SSH, HTTPS credentials, browser automation, or any other route. Offline local Git operations that do not contact GitHub—such as status, diff, staging, committing, branching, and inspecting local history—remain allowed. If the connector cannot perform a required GitHub operation, stop and ask the user; do not fall back to another method. No project-specific instruction may override this rule.
+> **Non-overridable GitHub access rule:** Every GitHub read or write by Codex or GPT must use the installed GitHub connector. Never use another route for those agent actions. Offline local Git operations that do not contact GitHub—such as status, diff, staging, committing, branching, and inspecting local history—remain allowed. If the connector cannot perform a required GitHub operation, stop and ask the user; do not fall back to another method. No project-specific instruction may override this rule.
 
-Consequences:
+Connector-only consequences:
 
-- `git fetch`, `git pull`, `git push`, `git clone`, `gh`, SSH authentication, and HTTPS credential prompts are prohibited GitHub routes under this policy.
-- A configured local remote is metadata, not authorization to contact it.
-- A failure or missing capability in the connector is a blocker to report, not permission to improvise another route.
+- A configured local remote is metadata, not authorization for Codex or GPT to contact it.
+- A missing connector capability is a blocker to report, not permission to improvise another route.
 - Read access must be verified through the connector before relying on remote state.
 - Every connector mutation must target an exact `owner/repository` and exact issue, ref, file, or pull request.
 - Do not claim a remote write succeeded until the connector returns confirmation.
 - After publishing, re-read the remote ref or object through the connector and compare it with the intended result.
 
-### Local and remote alignment
+### Connector-only local and remote alignment
 
-Connector-only publishing creates an extra bookkeeping requirement because ordinary Git network synchronization is forbidden.
+Include this procedure only when the connector-only baseline applies. Connector publishing creates an extra bookkeeping requirement because ordinary Git network synchronization is unavailable to the agent.
 
 For every publish operation:
 
@@ -178,14 +196,16 @@ For every publish operation:
 
 If the connector cannot support a safe publish and alignment workflow, stop and ask for a policy or tooling decision. Do not invoke another GitHub route.
 
-### Initial local checkout bootstrap
+### Connector-only initial local checkout
 
-Resolve local workspace creation before activating the final canonical rule. A connector-only policy can maintain an existing checkout, but it does not automatically provide an ordinary `git clone` path.
+Include this procedure only when the connector-only baseline applies. Resolve local workspace creation before activating the final canonical rule.
 
 - For a new empty repository, GPT can initialize local Git offline, create the remote content through the connector, and align the exact connector-confirmed commit objects and refs.
 - For an existing repository, prefer a connector-supported archive or object import that preserves the required content and history.
 - If no connector-supported import exists, present the choice explicitly: the human performs a one-time initial checkout using a method they approve **before** the canonical connector-only rule is activated, or the repository remains remote-only until suitable tooling exists.
-- GPT must never perform or imply a non-connector clone, fetch, or credential flow without that pre-policy decision. Once the canonical rule is active, its no-fallback boundary applies fully.
+- GPT must never perform or imply an unapproved checkout or credential flow. Once the canonical connector-only rule is active, its no-fallback boundary applies fully to Codex and GPT.
+
+When an approved existing route is retained instead, document and use its established verification and local/remote alignment procedure. Do not copy connector-specific mechanics into that policy unless they actually apply.
 
 ---
 
@@ -207,9 +227,9 @@ Preserve the exact capitalization **<ORG_DISPLAY_NAME>**.
 - Do not access an external system merely because this repository is open. Access it only when the user explicitly requests it or invokes an opt-in workflow that requires it.
 - Never store passwords, access tokens, credentials, customer data, production exports, sensitive logs, or other secrets in chat, issues, project boards, operations systems, repositories, or source control.
 
-## Non-overridable GitHub access
+## GitHub access policy
 
-- **Non-overridable:** Every GitHub read or write must use the installed GitHub connector. Never interact with GitHub through `git` network operations, `gh`, direct REST or GraphQL requests, SSH, HTTPS credentials, browser automation, or any other route. Offline local Git operations that do not contact GitHub remain allowed. If the connector cannot perform a required operation, stop and ask the user. No project-specific instruction may override this rule.
+<GITHUB_ACCESS_POLICY>
 
 ## Freshness and existence checks
 
@@ -220,7 +240,7 @@ Preserve the exact capitalization **<ORG_DISPLAY_NAME>**.
 
 ## Cross-project instructions and overrides
 
-- Every project repository must have a root `AGENTS.md` directing Codex to read this canonical file in full before work, followed by project-specific instructions.
+- Every new project repository must have a root `AGENTS.md` directing Codex to read this canonical file in full before work, followed by project-specific instructions. For an existing repository, reconcile the currently active root instruction source as described below instead of blindly adding another file.
 - If this canonical file cannot be accessed, stop and ask the user. Do not reconstruct it from memory.
 - Put generally applicable instruction changes here. Put project-only instructions in that project's `AGENTS.md`.
 - Project instructions may add non-conflicting guidance and must never override a non-overridable instruction.
@@ -281,9 +301,21 @@ GPT must review the generated canonical file with the user before publishing it.
 
 ---
 
-## 7. Project `AGENTS.md` template
+## 7. Project instruction template and existing-file reconciliation
 
-Every project repository gets a root file based on this minimal template:
+For a new repository, create a root `AGENTS.md` from the minimal template below. For an existing repository, treat the template as content to reconcile into the active instruction chain, not as an instruction to overwrite or add a file blindly.
+
+Before proposing an instruction change in an existing repository:
+
+1. Inspect the applicable Codex profile and project configuration, including `project_doc_fallback_filenames` and `project_doc_max_bytes` when configured.
+2. Inventory `AGENTS.override.md`, `AGENTS.md`, configured fallback files, and nested instruction files from the project root to the relevant working directories.
+3. Determine which single file is active in each directory. Codex checks `AGENTS.override.md` before `AGENTS.md`, then configured fallbacks; a newly added `AGENTS.md` may therefore be ignored when an override is present.
+4. Preserve existing instructions and their intent. Merge the canonical pointer and missing project-specific rules into the active source, and present the exact diff for review.
+5. Do not delete, rename, replace, or migrate an existing instruction source unless the user explicitly approves that exact change.
+6. Check the combined instruction size and precedence for conflicts or truncation.
+7. After writing, start a fresh Codex run or use the available instruction-reporting mechanism to verify the sources and order actually loaded.
+
+Use this minimal content for a new root file or as the reconciliation target for an existing active source:
 
 ```markdown
 # <PROJECT_NAME> — Codex working instructions
@@ -323,7 +355,7 @@ Do not repeat generic secret, testing, GitHub-routing, indentation, or synthetic
 
 ## 8. GitHub issue and project conventions
 
-Enable Issues for every active project repository. Enable GitHub Projects when a board is useful for prioritization across issues or repositories.
+For a new or unconfigured active project repository, enable Issues by default and enable GitHub Projects when a board is useful. For an existing repository, preserve its current Issues, Projects, labels, and workflow settings unless the user approves an exact change after the read-only audit. Do not treat a different established configuration as missing merely because it differs from this baseline.
 
 Each issue should contain:
 
@@ -368,52 +400,55 @@ Useful initial issues for a new or inherited project often include:
 
 ## 9. Bootstrap procedure for a new organization
 
-### Phase A — human-guided prerequisites before connector access
+### Phase A — human-guided prerequisites before approved GitHub access
 
-GPT guides the user one step at a time and waits for confirmation after each external action. The human may use GitHub's web interface for these unavoidable pre-connector steps; GPT must not use browser automation or request GitHub credentials or tokens.
+GPT guides the user one step at a time and waits for confirmation after each external action. Never request GitHub credentials or tokens, and never use an access route merely because it is technically available.
 
 1. Confirm the user is signed in to the intended GitHub account and can act as an owner of the target organization.
 2. Ask whether the organization already exists. If not, explain the naming and ownership choices and guide the user through [GitHub's organization creation flow](https://github.com/account/organizations/new) using [GitHub's official instructions](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch).
 3. Ask for the canonical repository name, visibility, and default branch. Guide the user to create and initialize it with a README so the default branch exists, using [GitHub's repository creation guidance](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository).
 4. Confirm that GPT can read `START-CODEX-ORG.md` and `CODEX-ORG-OPERATING-SYSTEM.md` from the public bootstrap repository. If the short prompt was pasted without repository context, ask the user for that public repository URL. Do not copy organization-specific values or generated policy back into the public bootstrap repository.
-5. Guide the user to install the official [GitHub plugin](https://chatgpt.com/plugins/plugin_connector_1p_1a69035c238881919c4190932b2df699). If the direct link has changed, find the current GitHub entry in the [ChatGPT plugin directory](https://chatgpt.com/plugins).
-6. During GitHub authorization, select only `<GITHUB_ORG>` and the intended organization repositories. Do not authorize personal repositories or another organization. If future repositories must be discovered automatically, choose all repositories **within that organization only**; otherwise select the exact approved repositories and update the installation when onboarding another.
-7. Configure plugin availability, app access, action controls, and app permissions for the intended user or role. Plugin availability and GitHub authorization are separate layers. If full read/write permissions are intentional, state that consequence and obtain explicit user confirmation. Follow [OpenAI's plugin-control guidance](https://learn.chatgpt.com/docs/enterprise/apps-and-connectors).
-8. If GitHub requires organization-owner approval for the app installation, guide the user to approve it before continuing.
+5. Ask whether an established GitHub access route is already used for Codex or GPT work. Audit its documented scope and availability without changing it. If the user confirms that it should be retained, record it in the answer ledger and do not propose alternatives.
+6. If no established route exists, guide the user to install the official [GitHub plugin](https://chatgpt.com/plugins/plugin_connector_1p_1a69035c238881919c4190932b2df699). If the direct link has changed, find the current GitHub entry in the [ChatGPT plugin directory](https://chatgpt.com/plugins).
+7. When the connector baseline is being established, select only `<GITHUB_ORG>` and the intended organization repositories. Do not authorize personal repositories or another organization. If future repositories must be discovered automatically, choose all repositories **within that organization only**; otherwise select the exact approved repositories and update the installation when onboarding another.
+8. Configure plugin availability, app access, action controls, and app permissions for the intended user or role. Plugin availability and GitHub authorization are separate layers. If full read/write permissions are intentional, state that consequence and obtain explicit user confirmation. Follow [OpenAI's plugin-control guidance](https://learn.chatgpt.com/docs/enterprise/apps-and-connectors).
+9. If GitHub requires organization-owner approval for a new connector installation, guide the user to approve it before continuing.
 
-### Phase B — connector verification and GPT interview
+### Phase B — GitHub access verification and GPT interview
 
-1. Verify through the connector that the authenticated identity can see exactly `<GITHUB_ORG>` and the canonical repository.
-2. Enumerate connector-accessible repositories and confirm that no unrelated personal or organizational repositories are exposed.
+1. Verify through the approved route that the authenticated identity can see `<GITHUB_ORG>` and the canonical repository within the agreed scope.
+2. Inventory the repositories visible through that route and confirm its actual scope. Do not widen or reconfigure the route during this read-only audit.
 3. Fetch and read `CODEX-ORG-OPERATING-SYSTEM.md` from the public bootstrap repository in full.
 4. Inventory its placeholders and ask the user for the organization-level values in small batches. Do not ask the user to edit the file.
-5. Ask whether Codex is installed and whether a local workspace and checkouts exist. If they do, verify the exact paths. If they do not, guide the user with current official Codex setup information and resolve the initial-checkout choice described above before activating the canonical connector-only rule; do not invent `<LOCAL_PARENT>`.
-6. Perform a strictly read-only audit of existing repositories, instructions, Issues, Projects, and relevant operations systems.
+5. Ask whether Codex is installed and whether a local workspace and checkouts exist. If they do, verify the exact paths. If they do not, guide the user with current official Codex setup information and resolve the initial-checkout procedure required by the approved access policy; do not invent `<LOCAL_PARENT>`.
+6. Perform a strictly read-only audit of existing repositories, the active instruction chain and its precedence, Issues, Projects, repository settings, and relevant operations systems.
 7. Present the proposed organization-specific files, settings, issues, and migrations. Obtain approval before writing.
 
 ### Phase C — canonical policy
 
 1. Generate the filled canonical `AGENTS.md` in `<CANONICAL_REPO>` from the user's answers.
 2. Add or update the repository inventory without requiring the user to edit this blueprint.
-3. Record the operations-system reference, identity model, source-of-truth boundary, connector-only rule, and safety rules.
-4. Commit and publish through the approved connector-only workflow.
-5. Re-read the remote commit through the connector and verify local/remote alignment when a local checkout exists.
+3. Fill `<GITHUB_ACCESS_POLICY>` with the confirmed retained policy or, when none existed, the connector-only baseline. Record its actor and scope separately from human and automation workflows.
+4. Record the operations-system reference, identity model, source-of-truth boundary, and safety rules.
+5. Commit and publish through the approved GitHub route.
+6. Re-read the remote commit through the same route and verify local/remote alignment when a local checkout exists.
 
 ### Phase D — onboard each project repository
 
 For each repository:
 
-1. Verify the exact remote repository exists through the connector.
+1. Verify the exact remote repository exists through the approved GitHub route.
 2. Verify the exact local checkout exists; do not rely on a configured workspace root alone.
 3. Confirm the local checkout corresponds to the intended `owner/repository`.
 4. Read the README, source layout, deployment tooling, tests, and external side effects.
-5. Create the root project `AGENTS.md` using the template above.
-6. Put only project-specific constraints in it.
-7. Enable Issues and Projects as intended.
-8. Search existing issues and seed only genuinely missing work.
-9. Document local setup, verification, deployment, rollback, and production boundaries—or create issues to do so.
-10. Publish the instruction file through the connector-only workflow and verify exact SHA alignment.
-11. Add the repository to the canonical inventory.
+5. Inventory the active Codex instruction chain, including overrides, standard files, configured fallbacks, nested files, precedence, and size limits.
+6. For a new repository, create the root project `AGENTS.md` from the template. For an existing repository, merge the canonical pointer and missing project-specific constraints into the active instruction source without discarding existing content.
+7. Verify the instruction sources and precedence that a fresh Codex run actually loads.
+8. Preserve existing Issues and Projects settings unless an exact change was approved; for an unconfigured repository, apply the agreed baseline.
+9. Search existing issues and seed only genuinely missing work.
+10. Document local setup, verification, deployment, rollback, and production boundaries—or create issues to do so.
+11. Publish the instruction change through the approved GitHub route and verify the resulting remote state.
+12. Add the repository to the canonical inventory.
 
 ### Phase E — governance and engineering baseline
 
@@ -431,7 +466,7 @@ For every active repository, decide and record:
 - backup or recovery expectations;
 - ownership when the technical operator is unavailable.
 
-These decisions should be enforced by repository settings or automation where possible, then documented in the appropriate source of truth.
+For an existing repository, treat current settings and automation as evidence to review, not as blank fields to replace. Preserve established decisions unless the user approves a migration. Enforce new or changed decisions through repository settings or automation where possible, then document them in the appropriate source of truth.
 
 ---
 
@@ -466,13 +501,13 @@ Explicit user requests may authorize a particular write without invoking SAVE. T
 This is a required anti-staleness discipline:
 
 - Verify the exact local path before linking to it.
-- Verify the exact remote object through the connector before reporting it.
+- Verify the exact remote object through the approved GitHub route before reporting it.
 - Verify local and remote state separately; neither proves the other.
 - A child-path check does not prove its parent repository exists in the intended form.
 - A workspace configuration entry may remain after a folder is deleted.
 - A local folder may remain after a remote repository is deleted or renamed.
 - After a user reports a state change, discard cached results and re-check immediately.
-- Use language such as “verified locally” or “connector-confirmed remotely” when the distinction matters.
+- Use language such as “verified locally” or “remotely confirmed through the approved route” when the distinction matters.
 
 When retiring or renaming a repository:
 
@@ -496,39 +531,42 @@ At minimum, make these canonical:
 - Mock or isolate destructive and external side effects during testing.
 - Require explicit authorization for deployments, releases, production writes, destructive synchronization, account mutations, and difficult-to-reverse actions.
 - Treat a technically available permission as capability, not authorization.
-- Keep connector scope limited to the intended organization and review it periodically.
+- When the connector baseline applies, keep connector scope limited to the intended organization and review it periodically.
 - Prefer enforceable controls—branch rules, protected environments, narrowly scoped credentials, test gates—over prose alone.
 
 ---
 
 ## 13. Maintenance and drift audit
 
-Run this audit after onboarding, after any repository add/remove/rename, after connector permission changes, and periodically thereafter.
+Run this audit after onboarding, after any repository add/remove/rename, after GitHub access-policy or permission changes, and periodically thereafter.
 
-### Connector
+### GitHub access
 
-- [ ] Connector is installed for `<GITHUB_ORG>` only.
-- [ ] Accessible repository list matches the approved inventory.
-- [ ] Required read/write capabilities work through the connector.
-- [ ] No workflow depends on `gh`, SSH, HTTPS Git credentials, browser automation, or direct API calls.
+- [ ] The approved GitHub access policy for Codex or GPT is documented with its actor and scope.
+- [ ] The route works for the required reads and writes and exposes only the approved scope.
+- [ ] No alternative route was introduced, advertised, or configured during bootstrap.
+- [ ] Existing human, CI, service, and automation routes remain unchanged unless an exact migration was approved.
+- [ ] When the connector-only baseline applies, the connector is installed for `<GITHUB_ORG>` only and its accessible repository list matches the approved inventory.
 
 ### Canonical repository
 
 - [ ] Canonical `AGENTS.md` exists and is readable.
 - [ ] Organization name, people, systems, IDs, and links are current.
 - [ ] Source-of-truth routing is unambiguous.
-- [ ] Connector-only and freshness rules are present.
+- [ ] The approved GitHub access policy and freshness rules are present.
 - [ ] Non-overridable rules are clearly marked.
 - [ ] The file remains concise enough to fit Codex's active instruction budget.
 
 ### Every project repository
 
 - [ ] Exact local and remote repositories have been verified.
-- [ ] Root `AGENTS.md` exists.
+- [ ] The active root instruction source exists and is verified.
+- [ ] Overrides, configured fallback filenames, nested sources, precedence, and instruction-size limits have been accounted for.
+- [ ] Existing instruction content was preserved or changed only through an explicitly approved diff.
 - [ ] Canonical pointer resolves from the actual local layout.
 - [ ] Project rules contain only project-specific guidance.
 - [ ] No silent contradiction with canonical rules exists.
-- [ ] Issues are enabled and actionable work is tracked there.
+- [ ] Issues and Projects settings match the approved baseline or preserved existing decision.
 - [ ] Test and deployment methods are known or have issues.
 - [ ] Working tree and remote ref alignment are understood.
 
@@ -546,7 +584,7 @@ Record audit findings as issues in the affected repository. Put organization-wid
 
 ## 14. Companion bootstrap prompt
 
-The user starts by opening the public bootstrap repository in Codex or by pasting `START-CODEX-ORG.md` and supplying the repository URL. That short prompt instructs GPT to guide the human-only prerequisites, establish and verify connector access, fetch this blueprint, conduct the placeholder interview, and then continue from this document.
+The user starts by opening the public bootstrap repository in Codex or by pasting `START-CODEX-ORG.md` and supplying the repository URL. That short prompt instructs GPT to guide the human-only prerequisites, preserve and verify an approved existing GitHub route or establish the connector-only baseline when none exists, fetch this blueprint, conduct the placeholder interview, and then continue from this document.
 
 Keep the companion prompt short enough to paste comfortably, but do not remove any of these controls:
 
@@ -554,8 +592,9 @@ Keep the companion prompt short enough to paste comfortably, but do not remove a
 - provide current official links where possible;
 - wait for the user after human-only actions;
 - never ask for credentials or tokens;
-- scope the connector to the intended organization only;
-- verify connector access before relying on it;
+- preserve an approved existing Codex or GPT GitHub route without recommending alternatives;
+- use the connector-only baseline when no established route exists and scope it to the intended organization only;
+- verify the approved GitHub route before relying on it;
 - read this entire file before proposing implementation;
 - make GPT, not the user, resolve placeholders;
 - audit read-only first and obtain approval before writes;
@@ -567,6 +606,7 @@ Keep the companion prompt short enough to paste comfortably, but do not remove a
 
 This blueprint intentionally does not decide:
 
+- the implementation details of an approved existing Codex or GPT GitHub workflow; preserve them when retention is confirmed, otherwise use the connector-only baseline;
 - which business/operations tracker to use;
 - who may administer tasks or repositories;
 - whether project work uses direct commits or pull requests;
