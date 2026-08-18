@@ -3,7 +3,9 @@
 This file is the detailed half of a two-file bootstrap kit for running multiple related repositories through Codex, one GitHub organization, and one organization-scoped GitHub connector:
 
 - `START-CODEX-ORG.md` is the short block a user copies into a new GPT conversation.
-- `CODEX-ORG-OPERATING-SYSTEM.md` is this detailed blueprint. The user uploads it unchanged to the new canonical repository; GPT reads it through the connector, interviews the user about its placeholders, and instantiates the organization.
+- `CODEX-ORG-OPERATING-SYSTEM.md` is this detailed public blueprint. GPT reads it from the public bootstrap source, interviews the user about its placeholders, and generates organization-specific policy in the user's chosen canonical repository.
+
+This public repository is a reusable template, not an organization's canonical policy and not a grant of authority. When it is opened as a Codex project, the root `AGENTS.md` supplies the bootstrap safety boundary. If `START-CODEX-ORG.md` is pasted elsewhere, GPT must obtain the public bootstrap repository URL before relying on this blueprint. Organization-specific names, people, identifiers, private links, credentials, and generated policy must be written only to the user's chosen repositories, never back into this public template.
 
 The user must not be required to edit this file manually. GPT owns placeholder discovery, questioning, validation, and creation of the filled organization-specific files.
 
@@ -373,7 +375,7 @@ GPT guides the user one step at a time and waits for confirmation after each ext
 1. Confirm the user is signed in to the intended GitHub account and can act as an owner of the target organization.
 2. Ask whether the organization already exists. If not, explain the naming and ownership choices and guide the user through [GitHub's organization creation flow](https://github.com/account/organizations/new) using [GitHub's official instructions](https://docs.github.com/en/organizations/collaborating-with-groups-in-organizations/creating-a-new-organization-from-scratch).
 3. Ask for the canonical repository name, visibility, and default branch. Guide the user to create and initialize it with a README so the default branch exists, using [GitHub's repository creation guidance](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository).
-4. Guide the user to upload `CODEX-ORG-OPERATING-SYSTEM.md` and, preferably, `START-CODEX-ORG.md` to the canonical repository through **Add file → Upload files**, following [GitHub's file-upload guidance](https://docs.github.com/en/repositories/working-with-files/managing-files/adding-a-file-to-a-repository). The files contain no credentials.
+4. Confirm that GPT can read `START-CODEX-ORG.md` and `CODEX-ORG-OPERATING-SYSTEM.md` from the public bootstrap repository. If the short prompt was pasted without repository context, ask the user for that public repository URL. Do not copy organization-specific values or generated policy back into the public bootstrap repository.
 5. Guide the user to install the official [GitHub plugin](https://chatgpt.com/plugins/plugin_connector_1p_1a69035c238881919c4190932b2df699). If the direct link has changed, find the current GitHub entry in the [ChatGPT plugin directory](https://chatgpt.com/plugins).
 6. During GitHub authorization, select only `<GITHUB_ORG>` and the intended organization repositories. Do not authorize personal repositories or another organization. If future repositories must be discovered automatically, choose all repositories **within that organization only**; otherwise select the exact approved repositories and update the installation when onboarding another.
 7. Configure plugin availability, app access, action controls, and app permissions for the intended user or role. Plugin availability and GitHub authorization are separate layers. If full read/write permissions are intentional, state that consequence and obtain explicit user confirmation. Follow [OpenAI's plugin-control guidance](https://learn.chatgpt.com/docs/enterprise/apps-and-connectors).
@@ -383,7 +385,7 @@ GPT guides the user one step at a time and waits for confirmation after each ext
 
 1. Verify through the connector that the authenticated identity can see exactly `<GITHUB_ORG>` and the canonical repository.
 2. Enumerate connector-accessible repositories and confirm that no unrelated personal or organizational repositories are exposed.
-3. Fetch and read `CODEX-ORG-OPERATING-SYSTEM.md` from the canonical repository in full.
+3. Fetch and read `CODEX-ORG-OPERATING-SYSTEM.md` from the public bootstrap repository in full.
 4. Inventory its placeholders and ask the user for the organization-level values in small batches. Do not ask the user to edit the file.
 5. Ask whether Codex is installed and whether a local workspace and checkouts exist. If they do, verify the exact paths. If they do not, guide the user with current official Codex setup information and resolve the initial-checkout choice described above before activating the canonical connector-only rule; do not invent `<LOCAL_PARENT>`.
 6. Perform a strictly read-only audit of existing repositories, instructions, Issues, Projects, and relevant operations systems.
@@ -544,7 +546,7 @@ Record audit findings as issues in the affected repository. Put organization-wid
 
 ## 14. Companion bootstrap prompt
 
-The user starts with `START-CODEX-ORG.md`, not this file. That short prompt instructs GPT to guide the human-only prerequisites, establish and verify connector access, fetch this blueprint, conduct the placeholder interview, and then continue from this document.
+The user starts by opening the public bootstrap repository in Codex or by pasting `START-CODEX-ORG.md` and supplying the repository URL. That short prompt instructs GPT to guide the human-only prerequisites, establish and verify connector access, fetch this blueprint, conduct the placeholder interview, and then continue from this document.
 
 Keep the companion prompt short enough to paste comfortably, but do not remove any of these controls:
 
