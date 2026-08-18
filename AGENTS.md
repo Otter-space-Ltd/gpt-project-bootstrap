@@ -23,4 +23,6 @@ This is a public, organization-neutral bootstrap kit. It is not an organization'
 
 ## Contributions to this repository
 
-Keep changes reusable and organization-neutral. Do not add real organization names, personal names, internal identifiers, private links, customer or production data, or instructions that silently authorize external writes.
+Keep changes reusable and organization-neutral. Do not add real organization names, personal names, internal identifiers, private links, customer or production data, or instructions that silently authorize external writes, except that intentionally approved public authorship, copyright, license, and attribution notices may name their subjects.
+
+That exception applies only to public attribution. It does not permit organization-specific setup data, generated policy, internal identifiers, private links, credentials, customer data, or production data.
