@@ -268,6 +268,7 @@ Preserve the exact capitalization **<ORG_DISPLAY_NAME>**.
 - Never expose secrets, customer data, production data, or sensitive configuration through health, readiness, status, or diagnostic endpoints.
 - Add or update automated tests for every new or changed endpoint, integration, or other material behavior when reasonably testable. If automation is impractical, document why and perform appropriate manual verification.
 - Use tabs for indentation in source files unless an established project formatter requires otherwise.
+- Use LF line endings in text files unless the relevant language or platform does not support LF at all.
 - Do not claim a local, board, deployment, or external-system change succeeded without direct confirmation.
 
 ## Opt-in commands
@@ -349,7 +350,7 @@ Good project-specific rules describe facts that are not generally true elsewhere
 - a utility extracts content without verifying a signature;
 - an exact timezone, protocol, or behavioral contract must be preserved.
 
-Do not repeat generic secret, testing, GitHub-routing, indentation, or synthetic-data rules in every project file. Put them in the canonical file once.
+Do not repeat generic secret, testing, GitHub-routing, indentation, line-ending, or synthetic-data rules in every project file. Put them in the canonical file once.
 
 ---
 
