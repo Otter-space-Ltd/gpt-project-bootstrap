@@ -1,5 +1,5 @@
 # Authors
 
-- Lorenzo Petrone "Lohoris"
+- Lorenzo Petrone "Lohoris" - https://Lohoris.net
 - Bombardilo Crocogpt
-- Otter space Ltd
+- Otter space Ltd - https://otterspace.ie
