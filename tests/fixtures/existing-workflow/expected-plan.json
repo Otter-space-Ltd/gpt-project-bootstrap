@@ -1,0 +1,22 @@
+{
+  "scenario": "existing-workflow",
+  "active_instruction_chain": [
+    "AGENTS.override.md",
+    "src/CODEX.md"
+  ],
+  "github_access_policy": "approved-existing-cli",
+  "recommended_alternatives": [],
+  "proposed_file_changes": [
+    {
+      "path": "AGENTS.override.md",
+      "operation": "merge canonical pointer into active source",
+      "preserve_existing_content": true
+    }
+  ],
+  "proposed_repository_setting_changes": [],
+  "preserved_external_workflows": [
+    "human-ssh",
+    "existing-ci"
+  ]
+}
+

@@ -1,0 +1,8 @@
+name: Existing CI
+on: [push]
+jobs:
+  existing:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo existing
+

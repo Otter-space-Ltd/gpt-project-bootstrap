@@ -1,0 +1,10 @@
+{
+  "name": "existing-workflow",
+  "working_directory": "src",
+  "approved_codex_github_route": "approved-existing-cli",
+  "external_workflows": [
+    "human-ssh",
+    "existing-ci"
+  ]
+}
+
