@@ -1,0 +1,20 @@
+{
+  "scenario": "unconfigured",
+  "active_instruction_chain": [
+    "AGENTS.md"
+  ],
+  "github_access_policy": "Every GitHub read or write by Codex or GPT must use the installed GitHub connector; offline local Git operations remain allowed.",
+  "recommended_alternatives": [],
+  "proposed_file_changes": [
+    {
+      "path": "AGENTS.md",
+      "operation": "merge canonical pointer into active source",
+      "preserve_existing_content": true
+    }
+  ],
+  "proposed_repository_setting_changes": [],
+  "preserved_external_workflows": [
+    "human-https"
+  ]
+}
+

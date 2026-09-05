@@ -1,0 +1,9 @@
+{
+  "name": "unconfigured",
+  "working_directory": ".",
+  "approved_codex_github_route": null,
+  "external_workflows": [
+    "human-https"
+  ]
+}
+
