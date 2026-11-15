@@ -33,6 +33,14 @@ Run `python -m unittest discover -s tests -v` and `python scripts/check_tracked_
 
 These checks validate the Python fixture model and formatting tools. They do not run an agent following the Markdown instructions, prove that the model matches actual Codex instruction loading, or verify a real organization's setup or external permissions. Changes to the blueprint still require review of those instructions; passing planner tests is not evidence that an agent has executed them correctly.
 
+## Optional trusted default-branch runner
+
+Validation uses `ubuntu-latest` unless the administrator configures `TRUSTED_PUSH_RUNNER_LABEL`. A nonempty value selects that runner label only for pushes to the repository's default branch in a non-fork repository. Every pull request, including same-repository PRs, continues to use the hosted runner. Keep real runner names, organization settings and host configuration outside this template's source.
+
+Before setting the variable, restrict the runner group to this reviewed workflow at its explicit default-branch ref, qualify the intended source and environment, and review public job metadata/log visibility. The workflow condition alone is not the access boundary: a modified PR workflow must not gain access by requesting the label directly. Do not allow arbitrary public or fork workflows onto a persistent trusted runner.
+
+The trusted runner must provide Linux, Git and `python3.12` on PATH. Validation creates a fresh temporary Python environment and uses read-only repository permission with checkout credentials persistence disabled. With the variable unset, no self-hosted runner is selected and the existing hosted setup remains. Native path filters skip changes limited to the named root documentation files on PRs and main pushes; fixture Markdown, executable/configuration files and mixed changes still run.
+
 ## Authors and licence
 
 Authors are listed in [AUTHORS.md](AUTHORS.md). This project is licensed under the [Microsoft Public License (MS-PL)](LICENSE).
